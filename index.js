@@ -12,12 +12,12 @@ const uri = "mongodb+srv://tajisan789:QSUtgMugCaTWpHhV@cluster0.uxzfht6.mongodb.
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
-  });
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 
 
@@ -32,77 +32,95 @@ async function run() {
     const database = client.db('SignatureDrive')
     const Product = database.collection('Product')
     const User = database.collection('User')
-    app.get('/product', async(req, res) =>{
-        const cursor = Product.find()
-        const result = await cursor.toArray()
-        res.send(result)
+    app.get('/product', async (req, res) => {
+      const cursor = Product.find()
+      const result = await cursor.toArray()
+      res.send(result)
     })
-    app.post('/product', async(req, res) =>{
-        const product = req.body
-        // console.log(product)
-        const result = await Product.insertOne(product)
-        res.send(result);
+    app.post('/product', async (req, res) => {
+      const product = req.body
+      // console.log(product)
+      const result = await Product.insertOne(product)
+      res.send(result);
     })
-    app.get('/product/:id', async(req, res) =>{
+    app.get('/product/:id', async (req, res) => {
       const id = req.params.id
       // console.log(id)
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await Product.findOne(query)
       res.send(result)
     })
-    app.delete('/product/:id', async(req, res) =>{
+    app.delete('/product/:id', async (req, res) => {
       const id = req.params.id
       // console.log(id)
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await Product.deleteOne(query)
       res.send(result)
     })
-    app.put('/product/:id', async(req, res) =>{
+    app.put('/product/:id', async (req, res) => {
       const id = req.params.id
       const PrevProduct = req.body;
       // console.log(id, PrevProduct)
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert: true}
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
       const UpdateProduct = {
-        $set:{
+        $set: {
           brand: PrevProduct.brand,
           model: PrevProduct.model,
           price: PrevProduct.price,
-          rating: PrevProduct.rating, 
+          rating: PrevProduct.rating,
           description: PrevProduct.description,
-          seatingCapacity: PrevProduct.seatingCapacity, 
-          mileage: PrevProduct.mileage, 
-          acceleration: PrevProduct.acceleration, 
-          engine: PrevProduct.engine, 
-          transmission: PrevProduct.transmission, 
-          fueltype: PrevProduct.fueltype, 
-          technology_1: PrevProduct.technology_1, 
-          technology_2: PrevProduct.technology_2 ,
+          seatingCapacity: PrevProduct.seatingCapacity,
+          mileage: PrevProduct.mileage,
+          acceleration: PrevProduct.acceleration,
+          engine: PrevProduct.engine,
+          transmission: PrevProduct.transmission,
+          fueltype: PrevProduct.fueltype,
+          technology_1: PrevProduct.technology_1,
+          technology_2: PrevProduct.technology_2,
           photo_url: PrevProduct.photo_url
         }
       }
       const result = await Product.updateOne(filter, UpdateProduct, options)
       res.send(result)
     })
-//User
-app.post('/user', async(req, res) =>{
-  const user = req.body
-  console.log(user)
-  const result = await User.insertOne(user)
-  res.send(result);
-})
-app.get('/user', async(req, res) =>{
-  const cursor = User.find()
-  const result = await cursor.toArray()
-  res.send(result)
-})
-app.get('/user/:id', async(req, res) =>{
-  const id = req.params.id
-  // console.log(id)
-  const query = {_id: new ObjectId(id)}
-  const result = await User.findOne(query)
-  res.send(result)
-})
+    //User
+    app.post('/user', async (req, res) => {
+      const user = req.body
+      console.log(user)
+      const result = await User.insertOne(user)
+      res.send(result);
+    })
+    app.get('/user', async (req, res) => {
+      const cursor = User.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.get('/user/:id', async (req, res) => {
+      const id = req.params.id
+      // console.log(id)
+      const query = { uid: id }
+      const result = await User.findOne(query)
+      res.send(result)
+    })
+    app.put('/user/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { uid: id }
+      const CartData = req.body
+      console.log(CartData);
+      const options = { upsert: false }
+      const UpdateCart = {
+        $set: {
+          "myCart": [{
+            model: CartData.model,
+            id: CartData.id
+        }]
+
+        }
+      };
+      const result = await User.updateOne(query, UpdateCart, options)
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -116,9 +134,9 @@ run().catch(console.dir);
 
 
 
-app.get('/', async(req, res) =>{
-    res.send("My First MERN Stack Server")
+app.get('/', async (req, res) => {
+  res.send("My First MERN Stack Server")
 })
-app.listen(port, () =>{
-    console.log('App listing on PORT:', port)
+app.listen(port, () => {
+  console.log('App listing on PORT:', port)
 })
