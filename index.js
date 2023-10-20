@@ -31,6 +31,7 @@ async function run() {
     // Create DataBAse
     const database = client.db('SignatureDrive')
     const Product = database.collection('Product')
+    const User = database.collection('User')
     app.get('/product', async(req, res) =>{
         const cursor = Product.find()
         const result = await cursor.toArray()
@@ -83,9 +84,25 @@ async function run() {
       const result = await Product.updateOne(filter, UpdateProduct, options)
       res.send(result)
     })
-
-
-
+//User
+app.post('/user', async(req, res) =>{
+  const user = req.body
+  console.log(user)
+  const result = await User.insertOne(user)
+  res.send(result);
+})
+app.get('/user', async(req, res) =>{
+  const cursor = User.find()
+  const result = await cursor.toArray()
+  res.send(result)
+})
+app.get('/user/:id', async(req, res) =>{
+  const id = req.params.id
+  // console.log(id)
+  const query = {_id: new ObjectId(id)}
+  const result = await User.findOne(query)
+  res.send(result)
+})
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
