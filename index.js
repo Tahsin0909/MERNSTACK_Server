@@ -38,22 +38,49 @@ async function run() {
     })
     app.post('/product', async(req, res) =>{
         const product = req.body
-        console.log(product)
+        // console.log(product)
         const result = await Product.insertOne(product)
         res.send(result);
     })
     app.get('/product/:id', async(req, res) =>{
       const id = req.params.id
-      console.log(id)
+      // console.log(id)
       const query = {_id: new ObjectId(id)}
       const result = await Product.findOne(query)
       res.send(result)
     })
     app.delete('/product/:id', async(req, res) =>{
       const id = req.params.id
-      console.log(id)
+      // console.log(id)
       const query = {_id: new ObjectId(id)}
       const result = await Product.deleteOne(query)
+      res.send(result)
+    })
+    app.put('/product/:id', async(req, res) =>{
+      const id = req.params.id
+      const PrevProduct = req.body;
+      // console.log(id, PrevProduct)
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const UpdateProduct = {
+        $set:{
+          brand: PrevProduct.brand,
+          model: PrevProduct.model,
+          price: PrevProduct.price,
+          rating: PrevProduct.rating, 
+          description: PrevProduct.description,
+          seatingCapacity: PrevProduct.seatingCapacity, 
+          mileage: PrevProduct.mileage, 
+          acceleration: PrevProduct.acceleration, 
+          engine: PrevProduct.engine, 
+          transmission: PrevProduct.transmission, 
+          fueltype: PrevProduct.fueltype, 
+          technology_1: PrevProduct.technology_1, 
+          technology_2: PrevProduct.technology_2 ,
+          photo_url: PrevProduct.photo_url
+        }
+      }
+      const result = await Product.updateOne(filter, UpdateProduct, options)
       res.send(result)
     })
 
