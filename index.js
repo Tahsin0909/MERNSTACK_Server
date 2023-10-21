@@ -50,6 +50,13 @@ async function run() {
       const result = await Product.findOne(query)
       res.send(result)
     })
+    app.get('/product/:brand', async (req, res) => {
+      const id = req.params.brand
+      console.log(id)
+      const query = { brand: new Object(toString(id)) }
+      const result = await Product.findOne(query)
+      res.send(result)
+    })
     app.delete('/product/:id', async (req, res) => {
       const id = req.params.id
       // console.log(id)
@@ -103,19 +110,27 @@ async function run() {
       const result = await User.findOne(query)
       res.send(result)
     })
+    app.get('/user/:id', async (req, res) => {
+      const id = req.params.id
+      // console.log(id)
+      const query = { uid: id }
+      const result = await User.findOne(query)
+      res.send(result)
+    })
     app.put('/user/:id', async (req, res) => {
       const id = req.params.id
-      const query = { uid: id }
       const CartData = req.body
+      const query = { uid: id}
       console.log(CartData);
-      const options = { upsert: false }
+      const options = { upsert: true }
       const UpdateCart = {
         $set: {
-          "myCart": [{
-            model: CartData.model,
-            id: CartData.id
-        }]
-
+          myCart: [
+            {
+              model: CartData.model,
+              id: CartData.id
+            }
+          ]
         }
       };
       const result = await User.updateOne(query, UpdateCart, options)
