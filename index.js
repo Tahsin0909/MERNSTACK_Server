@@ -139,7 +139,8 @@ async function run() {
           CarId: CartData.id,
           CarPhoto: CartData.photo_url,
           CarBrand: CartData.brand,
-          CarRating: CartData.rating
+          CarRating: CartData.rating,
+          CarPrice: CartData.price
         }
 
       };
@@ -160,6 +161,13 @@ async function run() {
       // }
       const cursor = UserCart.find(query)
       const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.delete('/myCart/:id', async (req, res) => {
+      const id = req.params.id
+      // console.log(id)
+      const query = { _id: new ObjectId(id) }
+      const result = await UserCart.deleteOne(query)
       res.send(result)
     })
     //User CArt
