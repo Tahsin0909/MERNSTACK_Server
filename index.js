@@ -32,6 +32,7 @@ async function run() {
     const database = client.db('SignatureDrive')
     const Product = database.collection('Product')
     const User = database.collection('User')
+    const UserCart = database.collection('UserCart')
     app.get('/product', async (req, res) => {
       const cursor = Product.find()
       const result = await cursor.toArray()
@@ -110,32 +111,59 @@ async function run() {
       const result = await User.findOne(query)
       res.send(result)
     })
-    app.get('/user/:id', async (req, res) => {
-      const id = req.params.id
-      // console.log(id)
-      const query = { uid: id }
-      const result = await User.findOne(query)
-      res.send(result)
-    })
-    app.put('/user/:id', async (req, res) => {
+    // app.get('/user/:id/myCart', async (req, res) => {
+    //   const id = req.params.id
+    //   console.log(id, req.params.myCart)
+    //   const query = {"myCart": myCart}
+    //   const result = await User.findOne(query)
+    //   res.send(result)
+    // })
+    app.post('/myCart', async (req, res) => {
       const id = req.params.id
       const CartData = req.body
-      const query = { uid: id}
+      const filter = { uid: id }
       console.log(CartData);
       const options = { upsert: true }
+      // const UserData = await User.findOne(filter)
+      // console.log(UserData);
+      const query = {
+        CarId: CartData.id,
+        UId: CartData.uId,
+        model: CartData.model
+      }
       const UpdateCart = {
-        $set: {
-          myCart: [
-            {
-              model: CartData.model,
-              id: CartData.id
-            }
-          ]
+        $set:
+        {
+          UId: CartData.uId,
+          model: CartData.model,
+          CarId: CartData.id,
+          CarPhoto: CartData.photo_url,
+          CarBrand: CartData.brand,
+          CarRating: CartData.rating
         }
+
       };
-      const result = await User.updateOne(query, UpdateCart, options)
+      const result = await UserCart.updateOne(query, UpdateCart, options)
       res.send(result)
     })
+    app.get('/myCart', async (req, res) => {
+      const cursor = UserCart.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    app.get('/myCart/:id', async (req, res) => {
+      const id = req.params.id
+      // console.log(id)
+      const query = { UId: id }
+      // const options = {
+      //   projection: {UId: id}
+      // }
+      const cursor = UserCart.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    //User CArt
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
